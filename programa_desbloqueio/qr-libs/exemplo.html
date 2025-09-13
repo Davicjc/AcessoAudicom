@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo QR Code - Programa Desbloqueio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .qr-example {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .qr-container {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+        }
+        #qrcode, #qrcode2 {
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .video-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Exemplo de QR Code - Programa Desbloqueio</h1>
+        <p>Esta página demonstra o uso das bibliotecas QR Code disponíveis na pasta <code>qr-libs/</code></p>
+    </div>
+
+    <div class="container">
+        <h2>📱 Geração de QR Codes</h2>
+        <div class="qr-example">
+            <div class="qr-container">
+                <h3>QRCode.js</h3>
+                <div id="qrcode"></div>
+                <button onclick="gerarQR1()">Gerar QR Code</button>
+                <button onclick="limparQR1()">Limpar</button>
+            </div>
+            <div class="qr-container">
+                <h3>QR Code Alternativo</h3>
+                <div id="qrcode2"></div>
+                <button onclick="gerarQR2()">Gerar QR Code</button>
+                <button onclick="limparQR2()">Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📷 Leitura de QR Codes (Instascan)</h2>
+        <div class="video-container">
+            <video id="preview" width="300" height="200"></video>
+            <div id="scanner-status" class="status info">Status: Câmera não inicializada</div>
+            <button onclick="iniciarScanner()">Iniciar Scanner</button>
+            <button onclick="pararScanner()">Parar Scanner</button>
+        </div>
+        <div id="qr-result" class="status" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>ℹ️ Informações</h2>
+        <p><strong>Bibliotecas disponíveis:</strong></p>
+        <ul>
+            <li><code>qr-libs/qrcode.js</code> - Geração de QR Codes</li>
+            <li><code>qr-libs/instascan.min.js</code> - Leitura de QR Codes via câmera</li>
+        </ul>
+        <p><strong>Uso no programa principal:</strong></p>
+        <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+&lt;script src="qr-libs/qrcode.js"&gt;&lt;/script&gt;
+&lt;script src="qr-libs/instascan.min.js"&gt;&lt;/script&gt;
+        </pre>
+    </div>
+
+    <!-- Carregamento das bibliotecas -->
+    <script src="qrcode.js"></script>
+    <script src="instascan.min.js"></script>
+
+    <script>
+        let scanner = null;
+
+        // Função para gerar QR Code usando QRCode.js
+        function gerarQR1() {
+            const container = document.getElementById("qrcode");
+            container.innerHTML = ''; // Limpar conteúdo anterior
+            
+            const textoTeste = "Dados Audicom: " + new Date().toLocaleString();
+            new QRCode(container, {
+                text: textoTeste,
+                width: 150,
+                height: 150,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
+            });
+        }
+
+        // Função para limpar QR Code 1
+        function limparQR1() {
+            document.getElementById("qrcode").innerHTML = '';
+        }
+
+        // Função para gerar QR Code alternativo
+        function gerarQR2() {
+            const container = document.getElementById("qrcode2");
+            const textoTeste = "Visitante ID: " + Math.random().toString(36).substr(2, 9);
+            
+            container.innerHTML = `
+                <div style="
+                    width: 150px; 
+                    height: 150px; 
+                    background: white; 
+                    border: 3px solid #000; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    font-size: 12px; 
+                    word-break: break-all; 
+                    padding: 10px; 
+                    box-sizing: border-box;
+                    margin: 0 auto;
+                ">
+                    QR: ${textoTeste}
+                </div>
+            `;
+        }
+
+        // Função para limpar QR Code 2
+        function limparQR2() {
+            document.getElementById("qrcode2").innerHTML = '';
+        }
+
+        // Função para iniciar o scanner
+        function iniciarScanner() {
+            const video = document.getElementById('preview');
+            const status = document.getElementById('scanner-status');
+            
+            if (scanner) {
+                status.textContent = 'Scanner já está ativo';
+                status.className = 'status info';
+                return;
+            }
+
+            try {
+                scanner = new Instascan.Scanner({ 
+                    video: video, 
+                    mirror: false 
+                });
+                
+                scanner.addListener('scan', function (content) {
+                    const resultDiv = document.getElementById('qr-result');
+                    resultDiv.innerHTML = `<strong>QR Code detectado:</strong> ${content}`;
+                    resultDiv.className = 'status success';
+                    resultDiv.style.display = 'block';
+                    
+                    // Simular processamento do programa principal
+                    console.log('QR Code escaneado:', content);
+                });
+
+                Instascan.Camera.getCameras().then(function (cameras) {
+                    if (cameras.length > 0) {
+                        scanner.start(cameras[0]).then(function() {
+                            status.textContent = 'Scanner ativo - Aponte para um QR Code';
+                            status.className = 'status success';
+                        });
+                    } else {
+                        status.textContent = 'Nenhuma câmera encontrada';
+                        status.className = 'status error';
+                    }
+                }).catch(function (e) {
+                    status.textContent = 'Erro ao acessar câmera: ' + e.message;
+                    status.className = 'status error';
+                });
+                
+            } catch (error) {
+                status.textContent = 'Erro ao inicializar scanner: ' + error.message;
+                status.className = 'status error';
+            }
+        }
+
+        // Função para parar o scanner
+        function pararScanner() {
+            const status = document.getElementById('scanner-status');
+            
+            if (scanner) {
+                scanner.stop();
+                scanner = null;
+                status.textContent = 'Scanner parado';
+                status.className = 'status info';
+            } else {
+                status.textContent = 'Scanner não está ativo';
+                status.className = 'status info';
+            }
+        }
+
+        // Informações sobre as bibliotecas
+        console.log('🔍 Bibliotecas QR Code carregadas:');
+        console.log('- QRCode.js:', typeof QRCode !== 'undefined' ? '✅ Carregado' : '❌ Não encontrado');
+        console.log('- Instascan:', typeof Instascan !== 'undefined' ? '✅ Carregado' : '❌ Não encontrado');
+    </script>
+</body>
+</html>

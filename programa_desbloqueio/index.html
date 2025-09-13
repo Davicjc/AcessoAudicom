@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>Parque Audicom - Sistema de Controle de Acesso</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> Sistema de Controle de Acesso</h1>
+                <p>Parque Audicom - Terminal de Verificação</p>
+                <div class="status-indicator">
+                    <div class="status-light" id="statusLight"></div>
+                    <span id="statusText">Sistema Iniciando...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Control Panel -->
+        <main class="main-content">
+            <!-- Camera Section -->
+            <section class="camera-section">
+                <div class="camera-container">
+                    <h2><i class="fas fa-camera"></i> Scanner QR Code</h2>
+                    <div class="camera-wrapper">
+                        <video id="cameraVideo" autoplay playsinline></video>
+                        <canvas id="qrCanvas" style="display: none;"></canvas>
+                        <div class="scanner-overlay">
+                            <div class="scanner-box">
+                                <div class="scanner-corner top-left"></div>
+                                <div class="scanner-corner top-right"></div>
+                                <div class="scanner-corner bottom-left"></div>
+                                <div class="scanner-corner bottom-right"></div>
+                            </div>
+                        </div>
+                        <div class="camera-info">
+                            <p id="cameraStatus">Posicione o QR Code dentro da área destacada</p>
+                        </div>
+                    </div>
+                    <div class="camera-controls">
+                        <button id="startCameraBtn" class="btn-primary">
+                            <i class="fas fa-play"></i> Iniciar Câmera
+                        </button>
+                        <button id="stopCameraBtn" class="btn-secondary" style="display: none;">
+                            <i class="fas fa-stop"></i> Parar Câmera
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Turnstile Control -->
+            <section class="turnstile-section">
+                <div class="turnstile-container">
+                    <h2><i class="fas fa-door-open"></i> Controle da Catraca</h2>
+                    <div class="turnstile-status">
+                        <div class="turnstile-light" id="turnstileLight"></div>
+                        <div class="turnstile-info">
+                            <h3 id="turnstileStatus">Catraca Bloqueada</h3>
+                            <p id="turnstileMessage">Aguardando leitura de QR Code válido</p>
+                            <div class="pending-entries" id="pendingEntries" style="display: none;">
+                                <span class="entries-count" id="entriesCount">0</span>
+                                <span>entradas liberadas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="turnstile-controls">
+                        <button id="clientPassedBtn" class="btn-confirm" disabled>
+                            <i class="fas fa-walking"></i> Cliente Passou
+                        </button>
+                        <button id="resetTurnstileBtn" class="btn-warning">
+                            <i class="fas fa-redo"></i> Resetar Catraca
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Last Scan Info -->
+            <section class="last-scan-section">
+                <div class="last-scan-container">
+                    <h2><i class="fas fa-history"></i> Última Leitura</h2>
+                    <div id="lastScanInfo" class="scan-info">
+                        <p class="no-scan">Nenhuma leitura realizada ainda</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Dashboard Section -->
+        <section class="dashboard-section">
+            <div class="dashboard-container">
+                <h2><i class="fas fa-chart-line"></i> Dashboard de Acesso</h2>
+                
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalVisitors">0</h3>
+                            <p>Total de Visitantes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalScans">0</h3>
+                            <p>QR Codes Lidos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-birthday-cake"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="averageAge">--</h3>
+                            <p>Idade Média</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayVisitors">0</h3>
+                            <p>Hoje</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição por Estado</h3>
+                        <canvas id="stateChart" width="300" height="200"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-bar"></i> Faixa Etária</h3>
+                        <canvas id="ageChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Access Log -->
+                <div class="access-log">
+                    <h3><i class="fas fa-list"></i> Registro de Acessos Recentes</h3>
+                    <div class="log-container" id="accessLog">
+                        <p class="no-records">Nenhum acesso registrado ainda</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Parque Audicom - Sistema de Controle de Acesso</p>
+                <p>Versão 1.0 - Desenvolvido para Segurança e Controle</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="qr-libs/instascan.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="chave.js"></script>
+    <script src="database.js"></script>
+    <script src="qr-reader.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
