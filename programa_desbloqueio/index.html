@@ -2,186 +2,1283 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#8b5cf6">
-    <title>Parque Audicom - Sistema de Controle de Acesso</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Acesso - Audicom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Scanner Section */
+        .scanner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        video {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 100%;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        .scanner-overlay {
+            position: relative;
+            display: inline-block;
+        }
+
+        .scanner-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid #27ae60;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #27ae60;
+        }
+
+        .corner.top-left {
+            top: -4px;
+            left: -4px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner.top-right {
+            top: -4px;
+            right: -4px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner.bottom-left {
+            bottom: -4px;
+            left: -4px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner.bottom-right {
+            bottom: -4px;
+            right: -4px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .status {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .status.success {
+            background: #d5f4e6;
+            border-left-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .status.error {
+            background: #fdf2f2;
+            border-left-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .status.warning {
+            background: #fef9e7;
+            border-left-color: #f39c12;
+            color: #f39c12;
+        }
+
+        /* Catraca Section */
+        .catraca-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .catraca-light {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #bdc3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .catraca-light.bloqueada {
+            background: #e74c3c;
+            color: white;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .catraca-light.liberada {
+            background: #27ae60;
+            color: white;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .catraca-info {
+            flex: 1;
+        }
+
+        .catraca-status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .catraca-message {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .pending-count {
+            background: #f39c12;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn.success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+
+        .btn.warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Visitantes Section */
+        .visitante-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .visitante-nome {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .visitante-info {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .visitante-status {
+            float: right;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .visitante-status.pendente {
+            background: #fef9e7;
+            color: #f39c12;
+        }
+
+        .visitante-status.passou {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            display: block;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .catraca-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .no-data {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        /* Manual Input Styles */
+        .manual-input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .manual-input-section h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+
+        #manual-qr-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s ease;
+        }
+
+        #manual-qr-input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .debug-info {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .debug-info h5 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1><i class="fas fa-shield-alt"></i> Sistema de Controle de Acesso</h1>
-                <p>Parque Audicom - Terminal de Verificação</p>
-                <div class="status-indicator">
-                    <div class="status-light" id="statusLight"></div>
-                    <span id="statusText">Sistema Iniciando...</span>
-                </div>
-            </div>
+        <header>
+            <h1>🛡️ Sistema de Controle de Acesso</h1>
+            <p class="subtitle">Parque Audicom</p>
         </header>
 
-        <!-- Main Control Panel -->
-        <main class="main-content">
-            <!-- Camera Section -->
-            <section class="camera-section">
-                <div class="camera-container">
-                    <h2><i class="fas fa-camera"></i> Scanner QR Code</h2>
-                    <div class="camera-wrapper">
-                        <video id="cameraVideo" autoplay playsinline></video>
-                        <canvas id="qrCanvas" style="display: none;"></canvas>
-                        <div class="scanner-overlay">
-                            <div class="scanner-box">
-                                <div class="scanner-corner top-left"></div>
-                                <div class="scanner-corner top-right"></div>
-                                <div class="scanner-corner bottom-left"></div>
-                                <div class="scanner-corner bottom-right"></div>
-                            </div>
-                        </div>
-                        <div class="camera-info">
-                            <p id="cameraStatus">Posicione o QR Code dentro da área destacada</p>
+        <!-- Scanner QR Code -->
+        <div class="card">
+            <div class="card-header">
+                📱 Scanner de QR Code
+            </div>
+            <div class="card-body">
+                <div class="scanner-container">
+                    <div class="scanner-overlay">
+                        <video id="video" width="400" height="300" autoplay></video>
+                        <div class="scanner-box">
+                            <div class="corner top-left"></div>
+                            <div class="corner top-right"></div>
+                            <div class="corner bottom-left"></div>
+                            <div class="corner bottom-right"></div>
                         </div>
                     </div>
-                    <div class="camera-controls">
-                        <button id="startCameraBtn" class="btn-primary">
-                            <i class="fas fa-play"></i> Iniciar Câmera
-                        </button>
-                        <button id="stopCameraBtn" class="btn-secondary" style="display: none;">
-                            <i class="fas fa-stop"></i> Parar Câmera
-                        </button>
+                    <canvas id="canvas"></canvas>
+                    <div id="scanner-status" class="status">
+                        Aguardando acesso à câmera...
                     </div>
                 </div>
-            </section>
-
-            <!-- Turnstile Control -->
-            <section class="turnstile-section">
-                <div class="turnstile-container">
-                    <h2><i class="fas fa-door-open"></i> Controle da Catraca</h2>
-                    <div class="turnstile-status">
-                        <div class="turnstile-light" id="turnstileLight"></div>
-                        <div class="turnstile-info">
-                            <h3 id="turnstileStatus">Catraca Bloqueada</h3>
-                            <p id="turnstileMessage">Aguardando leitura de QR Code válido</p>
-                            <div class="pending-entries" id="pendingEntries" style="display: none;">
-                                <span class="entries-count" id="entriesCount">0</span>
-                                <span>entradas liberadas</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="turnstile-controls">
-                        <button id="clientPassedBtn" class="btn-confirm" disabled>
-                            <i class="fas fa-walking"></i> Cliente Passou
-                        </button>
-                        <button id="resetTurnstileBtn" class="btn-warning">
-                            <i class="fas fa-redo"></i> Resetar Catraca
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Last Scan Info -->
-            <section class="last-scan-section">
-                <div class="last-scan-container">
-                    <h2><i class="fas fa-history"></i> Última Leitura</h2>
-                    <div id="lastScanInfo" class="scan-info">
-                        <p class="no-scan">Nenhuma leitura realizada ainda</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Dashboard Section -->
-        <section class="dashboard-section">
-            <div class="dashboard-container">
-                <h2><i class="fas fa-chart-line"></i> Dashboard de Acesso</h2>
                 
-                <!-- Statistics Cards -->
+                <!-- Entrada Manual para Testes -->
+                <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">🔧 Teste Manual</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <textarea 
+                            id="manual-qr-input" 
+                            placeholder="Cole aqui o código QR criptografado para testar manualmente..."
+                            style="flex: 1; min-width: 300px; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-family: monospace; font-size: 14px; resize: vertical; min-height: 80px;"
+                        ></textarea>
+                        <button id="btn-test-manual" class="btn" style="align-self: flex-start;">
+                            🔍 Testar Código
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button id="btn-clear-input" class="btn" style="background: #95a5a6;">
+                            🗑️ Limpar
+                        </button>
+                        <button id="btn-test-sample" class="btn" style="background: #9b59b6;">
+                            📋 Usar Exemplo
+                        </button>
+                        <button id="btn-check-libs" class="btn" style="background: #27ae60;">
+                            ⚙️ Verificar Sistema
+                        </button>
+                    </div>
+                    
+                    <!-- Status das Bibliotecas -->
+                    <div id="libs-status" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px; display: none;">
+                        <h5 style="margin-bottom: 10px; color: #2c3e50;">📋 Status do Sistema</h5>
+                        <div id="libs-status-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controle da Catraca -->
+        <div class="card">
+            <div class="card-header">
+                🚪 Controle da Catraca
+            </div>
+            <div class="card-body">
+                <div class="catraca-container">
+                    <div id="catraca-light" class="catraca-light bloqueada">
+                        🔒
+                    </div>
+                    <div class="catraca-info">
+                        <div id="catraca-status" class="catraca-status">
+                            Catraca Bloqueada
+                        </div>
+                        <div id="catraca-message" class="catraca-message">
+                            Aguardando leitura de QR Code válido
+                        </div>
+                        <div id="pending-count" class="pending-count" style="display: none;">
+                            Entradas pendentes: <span id="pending-number">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button id="btn-passou" class="btn success" disabled>
+                        🚶 Cliente Passou
+                    </button>
+                    <button id="btn-reset" class="btn warning">
+                        🔄 Resetar Catraca
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="card">
+            <div class="card-header">
+                📊 Estatísticas
+            </div>
+            <div class="card-body">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalVisitors">0</h3>
-                            <p>Total de Visitantes</p>
-                        </div>
+                        <span id="stat-total" class="stat-number">0</span>
+                        <div class="stat-label">Total de Visitantes</div>
                     </div>
-                    
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-qrcode"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalScans">0</h3>
-                            <p>QR Codes Lidos</p>
-                        </div>
+                        <span id="stat-hoje" class="stat-number">0</span>
+                        <div class="stat-label">Hoje</div>
                     </div>
-                    
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-birthday-cake"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="averageAge">--</h3>
-                            <p>Idade Média</p>
-                        </div>
+                        <span id="stat-scans" class="stat-number">0</span>
+                        <div class="stat-label">QR Codes Lidos</div>
                     </div>
-                    
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="todayVisitors">0</h3>
-                            <p>Hoje</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <h3><i class="fas fa-chart-pie"></i> Distribuição por Estado</h3>
-                        <canvas id="stateChart" width="300" height="200"></canvas>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3><i class="fas fa-chart-bar"></i> Faixa Etária</h3>
-                        <canvas id="ageChart" width="300" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- Recent Access Log -->
-                <div class="access-log">
-                    <h3><i class="fas fa-list"></i> Registro de Acessos Recentes</h3>
-                    <div class="log-container" id="accessLog">
-                        <p class="no-records">Nenhum acesso registrado ainda</p>
+                        <span id="stat-pendentes" class="stat-number">0</span>
+                        <div class="stat-label">Pendentes</div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <p>&copy; 2025 Parque Audicom - Sistema de Controle de Acesso</p>
-                <p>Versão 1.0 - Desenvolvido para Segurança e Controle</p>
+        <!-- Lista de Visitantes -->
+        <div class="card">
+            <div class="card-header">
+                👥 Visitantes Recentes
             </div>
-        </footer>
+            <div class="card-body">
+                <div id="visitantes-lista">
+                    <div class="no-data">
+                        Nenhum visitante registrado ainda
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="qr-libs/instascan.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- jsQR Library (minified) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     
-    <!-- Application Scripts -->
-    <script src="chave.js"></script>
-    <script src="database.js"></script>
-    <script src="qr-reader.js"></script>
-    <script src="dashboard.js"></script>
-    <script src="script.js"></script>
+    <!-- CryptoJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <script>
+        // Configuração de criptografia (igual ao sistema original)
+        const ENCRYPTION_CONFIG = {
+            key: "AUDICOM", // 8 caracteres = 8 bytes
+            algorithm: "DES",
+            mode: "ECB",
+            padding: "PKCS7",
+            
+            getKey() {
+                let formattedKey = this.key.padEnd(8, '0').substring(0, 8);
+                return formattedKey;
+            },
+            
+            validateKey() {
+                const key = this.getKey();
+                if (key.length !== 8) {
+                    throw new Error("Chave DES deve ter exatamente 8 bytes");
+                }
+                return true;
+            }
+        };
+
+        // Sistema de Controle de Acesso Audicom
+        class SistemaAudicom {
+            constructor() {
+                this.visitantesPendentes = 0;
+                this.database = {
+                    visitantes: [],
+                    scans: [],
+                    stats: { total: 0, hoje: 0, scans: 0, pendentes: 0 }
+                };
+                
+                this.init();
+                this.carregarDados();
+                this.iniciarCamera();
+            }
+
+            init() {
+                // Event listeners
+                document.getElementById('btn-passou').addEventListener('click', () => this.marcarPasso());
+                document.getElementById('btn-reset').addEventListener('click', () => this.resetarCatraca());
+                
+                // Event listeners para teste manual
+                document.getElementById('btn-test-manual').addEventListener('click', () => this.testarCodigoManual());
+                document.getElementById('btn-clear-input').addEventListener('click', () => this.limparEntradaManual());
+                document.getElementById('btn-test-sample').addEventListener('click', () => this.carregarExemplo());
+                document.getElementById('btn-check-libs').addEventListener('click', () => this.verificarSistema());
+                
+                // Atalhos de teclado
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'p') {
+                        e.preventDefault();
+                        this.marcarPasso();
+                    }
+                    if (e.ctrlKey && e.key === 'r') {
+                        e.preventDefault();
+                        this.resetarCatraca();
+                    }
+                    if (e.ctrlKey && e.key === 't') {
+                        e.preventDefault();
+                        this.testarCodigoManual();
+                    }
+                });
+
+                console.log('🚀 Sistema Audicom inicializado');
+            }
+
+            async iniciarCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: "environment" } 
+                    });
+                    
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+                    
+                    this.atualizarStatus('Câmera ativa - Posicione o QR Code', 'success');
+                    
+                    video.addEventListener('play', () => {
+                        this.iniciarScanner();
+                    });
+                    
+                } catch (error) {
+                    console.error('Erro ao acessar câmera:', error);
+                    this.atualizarStatus('Erro ao acessar câmera. Verifique permissões.', 'error');
+                }
+            }
+
+            iniciarScanner() {
+                const video = document.getElementById('video');
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+                
+                let ultimoScan = 0;
+                
+                const scan = () => {
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, canvas.width, canvas.height);
+                        
+                        if (code) {
+                            const agora = Date.now();
+                            if (agora - ultimoScan > 3000) { // 3 segundos entre scans
+                                ultimoScan = agora;
+                                this.processarQR(code.data, false);
+                            }
+                        }
+                    }
+                    requestAnimationFrame(scan);
+                };
+                
+                scan();
+            }
+
+            processarQR(dadosQR, isManualTest = false) {
+                console.log('📱 QR Code detectado', { isManualTest, dadosLength: dadosQR.length });
+                this.atualizarStatus('QR Code detectado! Processando...', 'warning');
+                
+                let debugInfo = `=== DEBUG INFO ===\n`;
+                debugInfo += `Timestamp: ${new Date().toISOString()}\n`;
+                debugInfo += `Tipo: ${isManualTest ? 'Teste Manual' : 'Scanner Camera'}\n`;
+                debugInfo += `Tamanho dos dados: ${dadosQR.length} caracteres\n`;
+                debugInfo += `Primeiros 50 caracteres: ${dadosQR.substring(0, 50)}...\n\n`;
+                
+                try {
+                    // Descriptografar dados
+                    debugInfo += `--- TENTATIVA DE DESCRIPTOGRAFIA ---\n`;
+                    const resultadoDescriptografia = this.descriptografar(dadosQR);
+                    
+                    if (!resultadoDescriptografia.sucesso) {
+                        throw new Error(`Falha na descriptografia: ${resultadoDescriptografia.erro}`);
+                    }
+                    
+                    const dadosDescriptografados = resultadoDescriptografia.dados;
+                    debugInfo += `Descriptografia: SUCESSO\n`;
+                    debugInfo += `Dados descriptografados (primeiros 200 chars): ${dadosDescriptografados.substring(0, 200)}...\n\n`;
+                    
+                    // Parsear visitantes
+                    debugInfo += `--- PARSE DE VISITANTES ---\n`;
+                    const visitantes = this.parsearVisitantes(dadosDescriptografados);
+                    debugInfo += `Visitantes encontrados: ${visitantes.length}\n`;
+                    visitantes.forEach((v, i) => {
+                        debugInfo += `  ${i+1}. ${v.nome || 'Nome não informado'}\n`;
+                    });
+                    
+                    if (visitantes.length === 0) {
+                        throw new Error('Nenhum visitante encontrado nos dados descriptografados');
+                    }
+                    
+                    // Registrar no banco de dados
+                    const scanId = this.registrarScan(visitantes, dadosQR);
+                    debugInfo += `\nScan registrado: ${scanId}\n`;
+                    
+                    // Liberar catraca
+                    this.liberarCatraca(visitantes.length);
+                    
+                    // Atualizar interface
+                    this.atualizarVisitantes();
+                    this.atualizarEstatisticas();
+                    
+                    this.atualizarStatus(`✅ ${visitantes.length} visitante(s) registrado(s)`, 'success');
+                    
+                    if (isManualTest) {
+                        this.mostrarDebugInfo(debugInfo + '\n✅ PROCESSAMENTO CONCLUÍDO COM SUCESSO');
+                    }
+                    
+                    console.log(`✅ Processamento concluído: ${visitantes.length} visitantes`);
+                    
+                } catch (error) {
+                    debugInfo += `\n❌ ERRO: ${error.message}\n`;
+                    debugInfo += `Stack trace: ${error.stack}\n`;
+                    
+                    console.error('❌ Erro ao processar QR:', error);
+                    this.atualizarStatus(`❌ Erro: ${error.message}`, 'error');
+                    
+                    if (isManualTest) {
+                        this.mostrarDebugInfo(debugInfo);
+                    }
+                }
+            }
+
+            // Função para descriptografar dados (igual ao sistema original)
+            decryptData(encryptedData) {
+                try {
+                    ENCRYPTION_CONFIG.validateKey();
+                    const key = ENCRYPTION_CONFIG.getKey();
+                    const keyHex = CryptoJS.enc.Utf8.parse(key);
+                    
+                    const decrypted = CryptoJS.DES.decrypt(encryptedData, keyHex, {
+                        mode: CryptoJS.mode.ECB,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                    
+                    return decrypted.toString(CryptoJS.enc.Utf8);
+                } catch (error) {
+                    console.error('Erro na descriptografia:', error);
+                    return null;
+                }
+            }
+
+            // Função para criptografar dados (igual ao sistema original)
+            encryptData(data) {
+                try {
+                    if (typeof ENCRYPTION_CONFIG === 'undefined') {
+                        throw new Error('Configuração de criptografia não encontrada');
+                    }
+                    
+                    ENCRYPTION_CONFIG.validateKey();
+                    const key = ENCRYPTION_CONFIG.getKey();
+                    
+                    const keyHex = CryptoJS.enc.Utf8.parse(key);
+                    
+                    const encrypted = CryptoJS.DES.encrypt(data, keyHex, {
+                        mode: CryptoJS.mode.ECB,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                    
+                    return encrypted.toString();
+                    
+                } catch (error) {
+                    console.error('Erro na criptografia:', error);
+                    throw new Error('Falha na criptografia dos dados');
+                }
+            }
+
+            descriptografar(dadosCriptografados) {
+                try {
+                    console.log('🔑 Iniciando descriptografia DES (método original)');
+                    console.log('Chave configurada:', ENCRYPTION_CONFIG.getKey());
+                    console.log('Dados criptografados (tamanho):', dadosCriptografados.length);
+                    
+                    // Limpar dados de entrada (remover espaços, quebras de linha, etc.)
+                    const dadosLimpos = dadosCriptografados.replace(/\s/g, '');
+                    console.log('Dados limpos (primeiros 100 chars):', dadosLimpos.substring(0, 100));
+                    
+                    // Tentar descriptografar usando o método original
+                    const resultado = this.decryptData(dadosLimpos);
+                    
+                    if (resultado && resultado.length > 0 && /[a-zA-Z]/.test(resultado)) {
+                        console.log('✅ Descriptografia bem-sucedida com método original');
+                        console.log('Resultado (primeiros 200 chars):', resultado.substring(0, 200));
+                        return {
+                            sucesso: true,
+                            dados: resultado,
+                            formato: 'original'
+                        };
+                    } else {
+                        console.log('❌ Método original falhou, tentando formatos alternativos...');
+                        
+                        // Tentar formatos alternativos como fallback
+                        const formatosAlternativos = [
+                            // Formato hexadecimal
+                            () => {
+                                const dadosHex = CryptoJS.enc.Hex.parse(dadosLimpos);
+                                const dadosB64 = CryptoJS.enc.Base64.stringify(dadosHex);
+                                return this.decryptData(dadosB64);
+                            },
+                            
+                            // Formato com modo CBC
+                            () => {
+                                const key = ENCRYPTION_CONFIG.getKey();
+                                const keyHex = CryptoJS.enc.Utf8.parse(key);
+                                const iv = CryptoJS.enc.Hex.parse('0000000000000000');
+                                const decrypted = CryptoJS.DES.decrypt(dadosLimpos, keyHex, {
+                                    mode: CryptoJS.mode.CBC,
+                                    iv: iv,
+                                    padding: CryptoJS.pad.Pkcs7
+                                });
+                                return decrypted.toString(CryptoJS.enc.Utf8);
+                            }
+                        ];
+                        
+                        for (let i = 0; i < formatosAlternativos.length; i++) {
+                            try {
+                                console.log(`Tentando formato alternativo ${i + 1}...`);
+                                const textoDescriptografado = formatosAlternativos[i]();
+                                
+                                if (textoDescriptografado && textoDescriptografado.length > 0 && 
+                                    /[a-zA-Z]/.test(textoDescriptografado)) {
+                                    console.log(`✅ Descriptografia bem-sucedida com formato alternativo ${i + 1}`);
+                                    return {
+                                        sucesso: true,
+                                        dados: textoDescriptografado,
+                                        formato: `alternativo_${i + 1}`
+                                    };
+                                }
+                            } catch (err) {
+                                console.log(`❌ Formato alternativo ${i + 1} falhou:`, err.message);
+                            }
+                        }
+                        
+                        return {
+                            sucesso: false,
+                            erro: 'Todos os métodos de descriptografia falharam',
+                            dados: null
+                        };
+                    }
+                    
+                } catch (error) {
+                    console.error('Erro geral na descriptografia:', error);
+                    return {
+                        sucesso: false,
+                        erro: error.message,
+                        dados: null
+                    };
+                }
+            }
+
+            parsearVisitantes(texto) {
+                console.log('📋 Iniciando parse de visitantes');
+                console.log('Texto a ser parseado:', texto);
+                
+                const visitantes = [];
+                const linhas = texto.split(/\r?\n/); // Suporta diferentes tipos de quebra de linha
+                let visitanteAtual = null;
+                
+                console.log(`Total de linhas encontradas: ${linhas.length}`);
+                
+                for (let i = 0; i < linhas.length; i++) {
+                    const linha = linhas[i];
+                    const linhaTrimmed = linha.trim();
+                    
+                    console.log(`Linha ${i + 1}: "${linhaTrimmed}"`);
+                    
+                    // Detectar início de novo visitante (P1>, P2>, etc.)
+                    if (linhaTrimmed.match(/^P\d*>/)) {
+                        console.log('  → Novo visitante detectado');
+                        if (visitanteAtual && visitanteAtual.nome) {
+                            visitantes.push(visitanteAtual);
+                            console.log('  → Visitante anterior salvo:', visitanteAtual.nome);
+                        }
+                        visitanteAtual = {
+                            id: Date.now() + Math.random(),
+                            timestamp: new Date().toISOString(),
+                            status: 'pendente'
+                        };
+                    } else if (visitanteAtual && linhaTrimmed) {
+                        // Processar campos do visitante atual
+                        const campo = this.identificarCampo(linhaTrimmed);
+                        if (campo.tipo && campo.valor) {
+                            visitanteAtual[campo.tipo] = campo.valor;
+                            console.log(`  → Campo encontrado: ${campo.tipo} = ${campo.valor}`);
+                        }
+                    }
+                }
+                
+                // Não esquecer do último visitante
+                if (visitanteAtual && visitanteAtual.nome) {
+                    visitantes.push(visitanteAtual);
+                    console.log('Último visitante salvo:', visitanteAtual.nome);
+                }
+                
+                console.log(`✅ Parse concluído: ${visitantes.length} visitantes encontrados`);
+                return visitantes;
+            }
+
+            identificarCampo(linha) {
+                // Padrões para identificar diferentes campos
+                const padroes = [
+                    { regex: /(?:Nome|Name):\s*(.+?)(?:,|$)/i, tipo: 'nome' },
+                    { regex: /(?:E-?mail|Email):\s*(.+?)(?:,|$)/i, tipo: 'email' },
+                    { regex: /(?:CPF):\s*(.+?)(?:,|$)/i, tipo: 'cpf' },
+                    { regex: /(?:Estado|State):\s*(.+?)(?:,|$)/i, tipo: 'estado' },
+                    { regex: /(?:Data|Date).*?:\s*(.+?)(?:,|$)/i, tipo: 'dataNascimento' },
+                    { regex: /(?:Parentesco|Relationship):\s*(.+?)(?:,|$)/i, tipo: 'parentesco' },
+                    { regex: /(?:Motivo|Reason):\s*(.+?)(?:,|$)/i, tipo: 'motivo' }
+                ];
+
+                for (const padrao of padroes) {
+                    const match = linha.match(padrao.regex);
+                    if (match) {
+                        return {
+                            tipo: padrao.tipo,
+                            valor: match[1].trim()
+                        };
+                    }
+                }
+
+                return { tipo: null, valor: null };
+            }
+
+
+
+            registrarScan(visitantes, dadosQR) {
+                const scanId = `SCAN_${Date.now()}`;
+                
+                // Adicionar visitantes ao banco
+                visitantes.forEach(visitante => {
+                    visitante.scanId = scanId;
+                    this.database.visitantes.push(visitante);
+                });
+                
+                // Registrar scan
+                this.database.scans.push({
+                    id: scanId,
+                    timestamp: new Date().toISOString(),
+                    visitantesCount: visitantes.length,
+                    dadosQR: dadosQR.substring(0, 100) + '...' // Truncar para economia de espaço
+                });
+                
+                this.salvarDados();
+                return scanId;
+            }
+
+            liberarCatraca(quantidadeVisitantes) {
+                this.visitantesPendentes = quantidadeVisitantes;
+                
+                const light = document.getElementById('catraca-light');
+                const status = document.getElementById('catraca-status');
+                const message = document.getElementById('catraca-message');
+                const pendingCount = document.getElementById('pending-count');
+                const pendingNumber = document.getElementById('pending-number');
+                const btnPasso = document.getElementById('btn-passou');
+                
+                light.className = 'catraca-light liberada';
+                light.innerHTML = '🔓';
+                status.textContent = 'Catraca Liberada';
+                message.textContent = `${quantidadeVisitantes} entrada(s) autorizada(s)`;
+                
+                pendingCount.style.display = 'block';
+                pendingNumber.textContent = quantidadeVisitantes;
+                btnPasso.disabled = false;
+                
+                console.log(`🔓 Catraca liberada para ${quantidadeVisitantes} visitante(s)`);
+            }
+
+            marcarPasso() {
+                if (this.visitantesPendentes <= 0) {
+                    alert('Nenhuma entrada pendente');
+                    return;
+                }
+                
+                this.visitantesPendentes--;
+                
+                // Marcar primeiro visitante pendente como passou
+                const visitantePendente = this.database.visitantes
+                    .find(v => v.status === 'pendente');
+                
+                if (visitantePendente) {
+                    visitantePendente.status = 'passou';
+                    visitantePendente.horaPasso = new Date().toISOString();
+                }
+                
+                // Atualizar interface
+                document.getElementById('pending-number').textContent = this.visitantesPendentes;
+                
+                if (this.visitantesPendentes === 0) {
+                    setTimeout(() => this.resetarCatraca(), 2000);
+                }
+                
+                this.atualizarVisitantes();
+                this.atualizarEstatisticas();
+                this.salvarDados();
+                
+                console.log(`🚶 Visitante passou! Restam ${this.visitantesPendentes} entrada(s)`);
+            }
+
+            resetarCatraca() {
+                this.visitantesPendentes = 0;
+                
+                const light = document.getElementById('catraca-light');
+                const status = document.getElementById('catraca-status');
+                const message = document.getElementById('catraca-message');
+                const pendingCount = document.getElementById('pending-count');
+                const btnPasso = document.getElementById('btn-passou');
+                
+                light.className = 'catraca-light bloqueada';
+                light.innerHTML = '🔒';
+                status.textContent = 'Catraca Bloqueada';
+                message.textContent = 'Aguardando leitura de QR Code válido';
+                
+                pendingCount.style.display = 'none';
+                btnPasso.disabled = true;
+                
+                this.atualizarEstatisticas();
+                
+                console.log('🔒 Catraca resetada');
+            }
+
+            atualizarStatus(mensagem, tipo = 'info') {
+                const status = document.getElementById('scanner-status');
+                status.textContent = mensagem;
+                status.className = `status ${tipo}`;
+            }
+
+            atualizarVisitantes() {
+                const lista = document.getElementById('visitantes-lista');
+                const visitantesRecentes = this.database.visitantes.slice(-10).reverse();
+                
+                if (visitantesRecentes.length === 0) {
+                    lista.innerHTML = '<div class="no-data">Nenhum visitante registrado ainda</div>';
+                    return;
+                }
+                
+                lista.innerHTML = visitantesRecentes.map(v => `
+                    <div class="visitante-item">
+                        <div class="visitante-status ${v.status}">${v.status}</div>
+                        <div class="visitante-nome">${v.nome || 'Nome não informado'}</div>
+                        <div class="visitante-info">
+                            ${v.email || ''} • ${v.cpf || ''} • ${v.estado || ''} • 
+                            ${new Date(v.timestamp).toLocaleString('pt-BR')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            atualizarEstatisticas() {
+                const hoje = new Date().toDateString();
+                const visitantesHoje = this.database.visitantes.filter(v => 
+                    new Date(v.timestamp).toDateString() === hoje
+                );
+                const pendentes = this.database.visitantes.filter(v => v.status === 'pendente');
+                
+                document.getElementById('stat-total').textContent = this.database.visitantes.length;
+                document.getElementById('stat-hoje').textContent = visitantesHoje.length;
+                document.getElementById('stat-scans').textContent = this.database.scans.length;
+                document.getElementById('stat-pendentes').textContent = pendentes.length;
+            }
+
+            salvarDados() {
+                try {
+                    localStorage.setItem('audicom_database', JSON.stringify(this.database));
+                } catch (error) {
+                    console.error('Erro ao salvar dados:', error);
+                }
+            }
+
+            carregarDados() {
+                try {
+                    const dados = localStorage.getItem('audicom_database');
+                    if (dados) {
+                        this.database = JSON.parse(dados);
+                        this.atualizarVisitantes();
+                        this.atualizarEstatisticas();
+                        console.log('📊 Dados carregados do localStorage');
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                }
+            }
+
+            // Funções para teste manual
+            testarCodigoManual() {
+                const input = document.getElementById('manual-qr-input');
+                const codigo = input.value.trim();
+                
+                if (!codigo) {
+                    alert('Por favor, insira um código QR para testar');
+                    return;
+                }
+                
+                console.log('🔧 Iniciando teste manual');
+                this.processarQR(codigo, true);
+            }
+
+            limparEntradaManual() {
+                document.getElementById('manual-qr-input').value = '';
+                this.removerDebugInfo();
+            }
+
+            carregarExemplo() {
+                // Exemplo de dados criptografados para teste (igual ao formato do sistema original)
+                const exemploTexto = `P1>
+Nome: João Silva,
+E-mail: joao@email.com,
+CPF: 123.456.789-00,
+Estado: SP,
+Data: 01/01/1990,
+Parentesco: Visitante,
+Motivo: Reunião,
+ID_Usuario: USR20250913001,
+ID_Familia: FAM250913001
+
+Add_Info>
+Hora_Cadastro: 13/09/2025 14:30,
+Usuarios_cadastrados: 1`;
+
+                try {
+                    // Criptografar usando o método original
+                    const dadosCriptografados = this.encryptData(exemploTexto);
+                    
+                    document.getElementById('manual-qr-input').value = dadosCriptografados;
+                    
+                    this.mostrarDebugInfo(`=== EXEMPLO CARREGADO (MÉTODO ORIGINAL) ===
+Dados originais:
+${exemploTexto}
+
+Dados criptografados (Base64):
+${dadosCriptografados}
+
+Chave utilizada: ${ENCRYPTION_CONFIG.getKey()}
+Algoritmo: ${ENCRYPTION_CONFIG.algorithm} + ${ENCRYPTION_CONFIG.mode} + ${ENCRYPTION_CONFIG.padding}
+
+Agora clique em "Testar Código" para processar.`);
+
+                } catch (error) {
+                    console.error('Erro ao gerar exemplo:', error);
+                    this.mostrarDebugInfo(`❌ ERRO AO GERAR EXEMPLO:
+${error.message}
+
+Verificar se a biblioteca CryptoJS foi carregada corretamente.`);
+                }
+            }
+
+            mostrarDebugInfo(info) {
+                // Remover debug info anterior se existir
+                this.removerDebugInfo();
+                
+                const debugDiv = document.createElement('div');
+                debugDiv.id = 'debug-info';
+                debugDiv.className = 'debug-info';
+                debugDiv.innerHTML = `<h5>🔍 Informações de Debug</h5>${info}`;
+                
+                // Adicionar após o campo de entrada manual
+                const container = document.querySelector('.scanner-container');
+                container.appendChild(debugDiv);
+            }
+
+            removerDebugInfo() {
+                const debugDiv = document.getElementById('debug-info');
+                if (debugDiv) {
+                    debugDiv.remove();
+                }
+            }
+
+            verificarSistema() {
+                const statusDiv = document.getElementById('libs-status');
+                const contentDiv = document.getElementById('libs-status-content');
+                
+                let status = '';
+                let allOk = true;
+                
+                // Verificar jsQR
+                if (typeof jsQR !== 'undefined') {
+                    status += '✅ jsQR: Carregado corretamente\n';
+                } else {
+                    status += '❌ jsQR: Não encontrado\n';
+                    allOk = false;
+                }
+                
+                // Verificar CryptoJS
+                if (typeof CryptoJS !== 'undefined') {
+                    status += '✅ CryptoJS: Carregado corretamente\n';
+                    
+                    // Verificar componentes específicos do CryptoJS
+                    if (CryptoJS.DES) {
+                        status += '  ✅ DES: Disponível\n';
+                    } else {
+                        status += '  ❌ DES: Não encontrado\n';
+                        allOk = false;
+                    }
+                    
+                    if (CryptoJS.mode && CryptoJS.mode.ECB) {
+                        status += '  ✅ Modo ECB: Disponível\n';
+                    } else {
+                        status += '  ❌ Modo ECB: Não encontrado\n';
+                        allOk = false;
+                    }
+                    
+                    if (CryptoJS.pad && CryptoJS.pad.Pkcs7) {
+                        status += '  ✅ Padding PKCS7: Disponível\n';
+                    } else {
+                        status += '  ❌ Padding PKCS7: Não encontrado\n';
+                        allOk = false;
+                    }
+                } else {
+                    status += '❌ CryptoJS: Não encontrado\n';
+                    allOk = false;
+                }
+                
+                // Verificar configuração de criptografia
+                if (typeof ENCRYPTION_CONFIG !== 'undefined') {
+                    status += '✅ ENCRYPTION_CONFIG: Configurado\n';
+                    status += `  Chave: ${ENCRYPTION_CONFIG.key}\n`;
+                    status += `  Algoritmo: ${ENCRYPTION_CONFIG.algorithm}\n`;
+                    status += `  Modo: ${ENCRYPTION_CONFIG.mode}\n`;
+                    status += `  Padding: ${ENCRYPTION_CONFIG.padding}\n`;
+                } else {
+                    status += '❌ ENCRYPTION_CONFIG: Não encontrado\n';
+                    allOk = false;
+                }
+                
+                // Verificar câmera
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    status += '✅ Câmera: API disponível\n';
+                } else {
+                    status += '❌ Câmera: API não disponível\n';
+                }
+                
+                // Verificar localStorage
+                try {
+                    localStorage.setItem('test', 'test');
+                    localStorage.removeItem('test');
+                    status += '✅ LocalStorage: Funcional\n';
+                } catch (e) {
+                    status += '❌ LocalStorage: Não disponível\n';
+                }
+                
+                // Teste de criptografia
+                try {
+                    const testData = 'Teste de criptografia';
+                    const encrypted = this.encryptData(testData);
+                    const decrypted = this.decryptData(encrypted);
+                    
+                    if (decrypted === testData) {
+                        status += '✅ Teste de Criptografia: PASSOU\n';
+                    } else {
+                        status += '❌ Teste de Criptografia: FALHOU\n';
+                        status += `  Esperado: "${testData}"\n`;
+                        status += `  Recebido: "${decrypted}"\n`;
+                        allOk = false;
+                    }
+                } catch (e) {
+                    status += '❌ Teste de Criptografia: ERRO\n';
+                    status += `  ${e.message}\n`;
+                    allOk = false;
+                }
+                
+                // Mostrar resultado geral
+                status += '\n' + (allOk ? '🎉 SISTEMA FUNCIONANDO CORRETAMENTE!' : '⚠️ ALGUNS PROBLEMAS ENCONTRADOS');
+                
+                contentDiv.innerHTML = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; font-size: 12px;">${status}</pre>`;
+                statusDiv.style.display = 'block';
+                
+                // Scroll para mostrar o status
+                statusDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Inicializar sistema quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            window.sistemaAudicom = new SistemaAudicom();
+        });
+    </script>
 </body>
 </html>
