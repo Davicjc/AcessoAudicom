@@ -823,7 +823,7 @@ class AccessControl {
                 <div class="qr-error">
                     <i class="fas fa-exclamation-triangle"></i>
                     <p>Biblioteca QR Code offline não carregada</p>
-                    <small>Arquivo qrcodegen-v1.8.0-es6.js não encontrado</small>
+                    <small>Arquivo gerador_qr.js não encontrado</small>
                     <br><br>
                     <details>
                         <summary>Mostrar dados criptografados</summary>
