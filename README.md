@@ -29,23 +29,6 @@ Uma aplicação web moderna e elegante para controle de acesso de visitantes, de
 - ✅ Notificações de sucesso/erro
 - ✅ Responsivo para mobile e desktop
 
-## 🚀 Como Usar
-
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/seu-usuario/Acesso_Audicom.git
-   cd Acesso_Audicom
-   ```
-
-2. **Abra o arquivo `index.html` em seu navegador:**
-   - Duplo clique no arquivo `index.html`
-   - Ou use um servidor local como Live Server no VS Code
-
-3. **Comece a registrar visitantes:**
-   - Preencha o formulário com os dados do visitante
-   - Clique em "Registrar Entrada"
-   - Os dados serão salvos automaticamente no navegador
-
 ## 📁 Estrutura do Projeto
 
 ```
