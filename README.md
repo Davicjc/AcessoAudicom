@@ -1,4 +1,32 @@
-# 🏢 Sistema de Controle de Acesso - Audicom
+<p align="center">
+  <img src=".github/readme/banner.png" alt="AcessoAudicom" width="100%">
+</p>
+
+<p align="center">
+  <img alt="👥 Cliente: Audicom Telecom" src="https://img.shields.io/badge/%F0%9F%91%A5_Cliente%3A_Audicom_Telecom-1F6FEB?style=for-the-badge">
+  <a href="https://davicjc.github.io/AcessoAudicom/"><img alt="🌐 Ver o site" src="https://img.shields.io/badge/%F0%9F%8C%90_Ver_o_site-1DB954?style=for-the-badge"></a>
+  <img alt="HTML5" src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+  <img alt="CSS3" src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+  <img alt="Java" src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
+  <img alt="Raspberry Pi Pico" src="https://img.shields.io/badge/Raspberry_Pi_Pico-A22846?style=for-the-badge&logo=raspberrypi&logoColor=white">
+</p>
+
+<p align="center">Controle de acesso de visitantes do Parque Audicom: cadastro web com QR Code, receptor Java e Raspberry Pi Pico liberando a catraca.</p>
+
+
+<p align="center">
+  <img src=".github/readme/preview.png" alt="Prévia de AcessoAudicom no computador e no celular" width="100%">
+</p>
+
+### 📸 Telas do sistema
+
+<p align="center">
+  <img src=".github/readme/telas.png" alt="Telas de AcessoAudicom" width="100%">
+</p>
+
+---
 
 Uma aplicação web moderna e elegante para controle de acesso de visitantes, desenvolvida com HTML5, CSS3 e JavaScript puro.
 
@@ -123,3 +151,7 @@ Desenvolvido com ❤️ para a Audicom
 ---
 
 **💡 Dica:** Para usar em produção, considere implementar um backend para persistência de dados mais robusta e sincronização entre dispositivos.
+
+---
+
+<p align="center">Desenvolvido por <a href="https://github.com/Davicjc">Davi Castro</a> · <a href="https://davicjc.com">davicjc.com</a><br><sub>para Audicom Telecom</sub></p>
